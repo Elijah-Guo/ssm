@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 不拦截静态资源 -->
+    <security:http pattern="/css/**" security="none"/>
+    <security:http pattern="/img/**" security="none"/>
+    <security:http pattern="/plugins/**" security="none"/>
+
+    <!-- 把登陆页面不拦截
+    -->
+    <security:http pattern="/login.jsp" security="none"/>
+
+    <!--
+        配置拦截的规则
+        auto-config="使用自带的页面"
+        use-expressions="是否使用spel表达式"，如果使用表达式：hasRole('ROLE_USER')
+    -->
+    <security:http auto-config="true" use-expressions="true">
+        <!-- 配置拦截的请求地址，任何请求地址都必须有ROLE_USER的权限 -->
+        <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')"/>
+        <!-- 配置具体的页面跳转 -->
+
+        <!--login-page:自定义的校验页面
+        login-processing-url:login页面登陆的表单信息处理地址
+        default-target-url:默认校验成功后登陆的页面-->
+
+        <!--登陆失败，自动跳转到登陆页面，无需配置错误页面-->
+
+        <security:form-login
+                login-page="/login.jsp"
+                login-processing-url="/login"
+                default-target-url="/index.jsp"/>
+
+
+        <!-- 关闭跨域请求
+        当你使用了自定义的页面而不使用security自带的页面，去校验，则security会识别你的页面
+        为第三方的页面，可能有安全隐患，不能够访问，所以无法校验，经过如下配置就可以了
+        -->
+        <security:csrf disabled="true"/>
+
+        <!-- 退出
+        当用户退出的时候security会自动清空用户的session,并重新跳转到自定义的登陆页面
+        -->
+        <security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login.jsp"/>
+
+    </security:http>
+
+    <!-- 在内存中临时提供用户名和密码的数据
+    将用户名和密码写死了，扩展性不好
+    -->
+    <!--<security:authentication-manager>
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="{noop}admin" authorities="ROLE_USER"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>-->
+
+
+
+    <!--重要：动态获取账户名的账号，密码，权限去校验-->
+
+    <!-- 在内存中临时提供用户名和密码的数据 -->
+    <security:authentication-manager>
+        <!-- 提供服务类，去数据库查询用户名和密码 -->
+        <security:authentication-provider user-service-ref="userService">
+        <!--引用已经配置的密码加密bean-->
+            <security:password-encoder ref="passwordEncoder"/>
+        </security:authentication-provider>
+
+    </security:authentication-manager>
+
+    <!--在spring的容器中去获取一个名为userService的服务对象,去进行校验
+
+    基于规范,该对象需要继承UserDetailsService接口,因为这样才可以让springsecurity
+
+    找到需要调用该对象的哪个方法-->
+
+
+    <!--添加数据的时候需要用到的加密bean -->
+
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <!--开启security注解支持-->
+    <security:global-method-security secured-annotations="enabled"/>
+
+</beans>
