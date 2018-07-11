@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespacedao接口名称 -->
+<mapper namespace="com.itheima.mapper.UserMapper">
+
+    <!-- 添加SQL -->
+    <insert id="insertUser" parameterType="userinfo">
+        <selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into user (USERNAME,BIRTHDAY,SEX,ADDRESS)
+        VALUES (#{username},#{birthday},#{sex},#{address})
+    </insert>
+    <!-- 更新SQL -->
+    <update id="updateUser" parameterType="userinfo">
+        update user set USERNAME=#{username},BIRTHDAY=#{birthday},
+        SEX=#{sex},ADDRESS=#{address} where ID = #{id}
+    </update>
+    <!-- 删除 -->
+    <delete id="deleteUser" parameterType="userinfo">
+        delete from user where id = #{id}
+    </delete>
+    <!-- 查询 -->
+    <select id="findUserByID" parameterType="int" resultType="userinfo">
+        select * from user where id = #{id}
+    </select>
+
+    <!-- 模糊查询 -->
+    <select id="findUsersByLikeName" parameterType="string" resultType="userinfo">
+        select * from user where username like #{username}
+    </select>
+
+    <select id="findUsersByPageCount" resultType="int">
+        select count(ID) from user
+    </select>
+
+    <select id="findUsersByPage" parameterType="map" resultType="userinfo">
+        select * from user limit #{start},#{end}
+    </select>
+    
+    <select id="findUsersByParams" parameterType="queryvo" resultType="userinfo">
+        select * from user where username
+        like #{username}
+        and birthday BETWEEN #{startDate} and #{endDate}
+        and sex = #{sex}
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
