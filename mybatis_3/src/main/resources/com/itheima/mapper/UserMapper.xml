@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--DAO接口的名称-->
+<mapper namespace="com.itheima.mapper.UserMapper">
+
+    <insert id="insertUser" parameterType="userinfo">
+       <selectKey keyProperty="id" keyColumn="ID" order="AFTER" resultType="int">
+           select last_insert_id()
+       </selectKey>
+        insert into user (USERNAME,BIRTHDAY,SEX,ADDRESS) values (#{username},#{birthday},#{sex},#{address})
+    </insert>
+    
+    <update id="updateUser" parameterType="userinfo">
+        update user set USERNAME=#{username},BIRTHDAY=#{birthday},SEX=#{sex},ADDRESS=#{address}
+        where ID=#{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="userinfo">
+        delete from user where ID=#{id}
+    </delete>
+
+    <!--条件查找-->
+    <select id="findUserByID" parameterType="userInfo" resultType="userinfo">
+        select * from user where ID=#{id}
+    </select>
+    
+    <!--模糊查找-->
+    <select id="findUsersByLikeName" parameterType="string" resultType="USERINFO">
+        select * from user where USERNAME like #{username}
+    </select>
+
+    <!--总条数-->
+    <select id="findUsersByPageCount" resultType="int">
+        select count(id) from user
+    </select>
+
+    <!--分页查找,传入参数是map,保存两个传入参数,多个传入参数建议使用QueryVO类来构建参数列表类-->
+    <select id="findUsersByPage" parameterType="map" resultType="userinfo">
+        select * from user limit #{start},#{end}
+    </select>
+
+    <!--多条件查询-->
+    <select id="findUsersByParams" parameterType="queryVO" resultType="userinfo">
+        select * from user where USERNAME like #{username} and BIRTHDAY between #{startDate} and
+        #{endDate} and SEX=#{sex}
+    </select>
+</mapper>

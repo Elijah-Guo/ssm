@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--DAO接口的名称-->
+<mapper namespace="com.itheima.mapper.UserTypeMapper">
+
+    <!--数据库字段名不同的时候映射为自定义的类型名-->
+    <resultMap id="dd" type="usertype">
+        <id property="id" column="t_id"></id>
+        <result property="name" column="t_name"></result>
+        <result property="jieshao" column="t_explain"></result>
+    </resultMap>
+
+    <!--查询全部-->
+    <select id="findAllUserTypes" resultMap="dd">
+        select * from usertype
+    </select>
+
+</mapper>
