@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--接口名称-->
+<mapper namespace="com.itheima.mapper.AccountMapper">
+
+    <!--1对1表查询的映射表关系-->
+    <resultMap id="fuck" type="Account">
+        <id column="aid" property="id"></id>
+        <result column="money" property="money"></result>
+        <!--开始映射封装的类-->
+        <association property="userInfo" javaType="com.itheima.entity.UserInfo">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+            <result column="birthday" property="birthday"></result>
+            <result column="sex" property="sex"></result>
+            <result column="address" property="address"></result>
+        </association>
+    </resultMap>
+    <select id="findAllAccountByID" parameterType="int" resultMap="fuck">
+        select a.id aid,a.money,u.* from account a inner join user u on a.uid=u.id where a.id=#{id}
+    </select>
+
+</mapper>

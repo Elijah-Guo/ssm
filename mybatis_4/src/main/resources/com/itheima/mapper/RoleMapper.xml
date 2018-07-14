@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--接口名称-->
+<mapper namespace="com.itheima.mapper.RoleMapper">
+
+    <resultMap id="Ela" type="role">
+        <id property="r_id" column="R_ID"></id>
+        <result property="r_name" column="R_ID"></result>
+        <result property="r_desc" column="R_DESC"></result>
+        <collection property="userinfo" ofType="userinfo">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+            <result column="birthday" property="birthday"></result>
+            <result column="sex" property="sex"></result>
+            <result column="address" property="address"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findAllByRoleID" parameterType="int" resultMap="Ela">
+        SELECT u.*,r.* FROM user_role ur
+        INNER JOIN USER u ON ur.uid = u.id
+        INNER JOIN role r ON ur.rid = r.r_id WHERE r.r_id =#{id}
+    </select>
+
+</mapper>

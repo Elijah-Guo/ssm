@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--接口名称-->
+<mapper namespace="com.itheima.mapper.UserMapper">
+    <sql id="love">
+        select * from user
+    </sql>
+
+    <!--一对多查询,映射账户表的信息-->
+    <resultMap id="loveing" type="userinfo">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="sex" property="sex"></result>
+        <result column="address" property="address"></result>
+        <!--一对多或者多对多的配置用collection,ofType获取List集合的泛型类型-->
+        <collection property="accounts" ofType="com.itheima.entity.Account">
+            <id column="aid" property="id"></id>
+            <result column="money" property="money"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findUsersByID1" parameterType="int" resultMap="loveing">
+        SELECT a.id aid,a.money,u.* FROM account a INNER JOIN USER u ON a.uid=u.id
+        WHERE u.id=#{id}
+    </select>
+
+    <!--多对多查询,映射role表的信息-->
+    <resultMap id="push" type="userinfo">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="sex" property="sex"></result>
+        <result column="address" property="address"></result>
+        <collection property="roles" ofType="com.itheima.entity.Role">
+            <id property="r_id" column="R_ID"></id>
+            <result property="r_name" column="R_NAME"></result>
+            <result property="r_desc" column="R_DESC"></result>
+        </collection>
+    </resultMap>
+    <select id="findUsersByID2" parameterType="int" resultMap="push">
+        SELECT u.*,r.* FROM user_role ur
+        INNER JOIN USER u ON ur.uid = u.id
+        INNER JOIN role r ON ur.rid = r.r_id WHERE u.id = 3
+    </select>
+
+
+    <!--多条件查询-->
+    <select id="findUsersByParams" parameterType="queryvo" resultType="userinfo">
+        <include refid="love"></include>
+        <where>
+        <if test="likename != null">
+          and  username LIKE #{likename}
+        </if>
+        <if test="sex!=null">
+        AND sex=#{sex}
+        </if>
+        <if test="strattime!=null and endtime !=null">
+        AND birthday BETWEEN #{strattime} AND #{endtime}
+        </if>
+        <if test="dis!=null and dis.length>0">
+        <foreach collection="dis" item="i" open="id in (" close=")" separator=",">
+            #{i}
+        </foreach>
+        </if>
+        </where>
+    </select>
+
+    <!--条件查询-->
+    <select id="findUsersByID" parameterType="int" resultType="userinfo">
+        <include refid="love"></include> where ID=#{id}
+    </select>
+
+    <!--分页查询-->
+    <select id="findUserPage" parameterType="map" resultType="userinfo">
+        select * from user limit #{start},#{end}
+    </select>
+    
+    
+    <update id="updateUser" parameterType="userinfo">
+        update user
+        <set>
+            <if test="username!=null">
+                USERNAME=#{username},
+            </if>
+            <if test="birthday!=null">
+                BIRTHDAY=#{birthday},
+            </if>
+            <if test="sex!=null">
+                SEX=#{sex},
+            </if>
+            <if test="address!=null">
+                ADDRESS=#{address},
+            </if>
+        </set>
+        where ID=#{id}
+
+    </update>
+</mapper>
