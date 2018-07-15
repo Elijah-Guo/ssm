@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+        <bean id="accountDAO" class="com.itheima.dao.Impl.AccountDAOImpl" scope="prototype"></bean>
+        <bean id="accountService" class="com.itheima.service.Impl.AcccountServiceImpl">
+                <!--解决accountService类需要依赖accountDAO创建对象而造成的硬耦合-->
+                <property name="accountDAO" ref="accountDAO"/>
+        </bean>
+        <bean id="user1" class="com.itheima.entity.User">
+                <property name="id" value="3"></property>
+                <property name="username" value="斌哥"></property>
+                <property name="birthday" ref="now"></property>
+                <property name="sex" value="男"></property>
+                <property name="address" value="北京"></property>
+                <property name="sarrys">
+                        <array>
+                                <value>A</value>
+                                <value>B</value>
+                                <value>C</value>
+                                <value>D</value>
+                        </array>
+                </property>
+                <property name="slists">
+                        <list>
+                                <value>E</value>
+                                <value>H</value>
+                                <value>J</value>
+                        </list>
+                </property>
+                <property name="ssets">
+                        <set>
+                                <value>K</value>
+                                <value>U</value>
+                                <value>P</value>
+                        </set>
+                </property>
+                <property name="smaps">
+                        <map>
+                                <entry key="楠楠" value="天天"></entry>
+                                <entry key="k1" value="3589"></entry>
+                                <entry key="娃哈哈" value="可口可乐"></entry>
+                        </map>
+                </property>
+                <property name="properties">
+                        <props>
+                                <prop key="k1">熊大</prop>
+                                <prop key="k2">熊二</prop>
+                                <prop key="k3">熊三</prop>
+                        </props>
+                </property>
+        </bean>
+
+        <bean id="now" class="java.util.Date"/>
+</beans>
