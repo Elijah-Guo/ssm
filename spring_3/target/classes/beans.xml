@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <bean id="userService" class="com.itheima.service.Impl.UserServiceImpl"></bean>
+
+    <bean id="sysLog" class="com.itheima.utils.sysLog"></bean>
+
+    <aop:config>
+        <aop:aspect id="aspect" ref="sysLog">
+            <aop:pointcut id="serviceCut" expression="execution(* com.itheima.service..*.*(..))"/>
+            <aop:before method="methodBefore" pointcut-ref="serviceCut"/>
+            <aop:after-returning method="methodReturning" pointcut-ref="serviceCut"/>
+            <aop:after-throwing method="methodafterThrowing" pointcut-ref="serviceCut"/>
+            <aop:after method="methodafter" pointcut-ref="serviceCut"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
