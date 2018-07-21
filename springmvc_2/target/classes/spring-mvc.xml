@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+">
+
+    <!-- 扫描注解包 -->
+    <context:component-scan base-package="com.itheima" />
+    <!-- SpringMVC的预定义功能开启 -->
+    <mvc:annotation-driven conversion-service="conversionService" />
+    <!-- 静态资源是不需要拦截 -->
+    <mvc:resources location="/js/" mapping="/js/**"/>
+    <!-- 配置事务解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 视图前缀 -->
+        <property name="prefix" value="/WEB-INF/pages/" />
+        <!-- 视图文件类型 -->
+        <property name="suffix" value=".jsp" />
+    </bean>
+    <!-- 配置自定义类型转换 -->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <array>
+                <bean class="com.itheima.util.StringToDate" />
+            </array>
+        </property>
+    </bean>
+    <!-- 设定上传参数 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 一次性上传5M的内容 -->
+        <property name="maxUploadSize" value="5242880" />
+    </bean>
+</beans>
