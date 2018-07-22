@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="30" strict="true" schema="Log4J-V2.2.xsd">
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 将日志输出到控制台 -->
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level [%C{36}.%M] - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- 全局配置 -->
+        <root level="info">
+            <appenderRef ref="Console"/>
+        </root>
+        <!-- Spring框架日志级别 -->
+        <logger name="org.springframework.web" level="debug" additivity="false">
+            <appenderRef ref="Console"/>
+        </logger>
+        <!-- 业务层日志 -->
+        <logger name="com.itheima.service" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+
+        <!-- druid配置 -->
+        <logger name="druid.sql.Statement" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+    </Loggers>
+
+
+</Configuration>

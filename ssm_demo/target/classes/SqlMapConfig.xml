@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 加载配置文件,读取配置参数 -->
+    <properties resource="ssm.properties"/>
+    <!-- 框架设置 -->
+    <settings>
+        <!-- 开启延迟加载 -->
+        <setting name="lazyLoadingEnabled" value="${setting.lazyLoadingEnabled}" />
+        <!-- 关闭立即加载 -->
+        <setting name="aggressiveLazyLoading" value="${setting.aggressiveLazyLoading}" />
+        <!-- 设定tostring方法延迟加载 -->
+        <setting name="lazyLoadTriggerMethods" value="${setting.lazyLoadTriggerMethods}" />
+        <!-- 设置开启二级缓存 -->
+        <setting name="cacheEnabled" value="${setting.cacheEnabled}" />
+        <!-- 打印SQL语句 -->
+        <setting name="logImpl" value="${setting.logimpl}" />
+    </settings>
+    <!-- 添加别名 -->
+    <typeAliases>
+        <package name="${typeAliases.package}" />
+    </typeAliases>
+</configuration>

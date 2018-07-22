@@ -1,0 +1,31 @@
+.circle1 {
+	width: 38px;
+	height: 38px;
+	border: solid;
+	border-color: #f54646;
+	border-radius: 50%;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	text-align: center;
+	line-height: 35px;
+	color: #f54646;
+	font-size: larger;
+	float: left;
+	margin: auto 5px auto 5px;
+}
+
+.circle2 {
+	width: 38px;
+	height: 38px;
+	border: solid;
+	border-color: #39f;
+	border-radius: 50%;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	text-align: center;
+	line-height: 35px;
+	color: #39f;
+	font-size: larger;
+	float: left;
+	margin: auto 5px auto 5px;
+}

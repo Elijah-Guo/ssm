@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+
+
+    <!--导入外置的配置文件-->
+    <context:property-placeholder location="classpath:ssm.properties"/>
+    <!--注解的包扫描-->
+    <context:component-scan base-package="com.itheima">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 四大属性 -->
+        <property name="driverClassName" value="${jdbc.dirver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <!-- 配置初始化连接个数 -->
+        <property name="initialSize" value="0" />
+        <!-- 配置最小空闲连接 -->
+        <property name="minIdle" value="0" />
+        <!-- 配置最大的活动连接 -->
+        <property name="maxActive" value="15" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000" />
+        <!-- 获取链接的时候，不校验是否可用，开启会有损性能
+             这里建议配置为TRUE，防止取到的连接不可用。-->
+        <property name="testOnBorrow" value="true" />
+        <!-- 归还链接到连接池的时候校验链接是否可用 -->
+        <property name="testOnReturn" value="false" />
+        <!-- 此项配置为true即可，不影响性能，并且保证安全性。
+             意义为：申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，
+             执行validationQuery检测连接是否有效 -->
+        <property name="testWhileIdle" value="true" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <!-- 链接使用超过时间限制是否回收 -->
+        <property name="removeAbandoned" value="true" />
+        <!-- 超过时间限制时间（单位秒），目前为5分钟，如果有业务处理时间超过5分钟，可以适当调整。 -->
+        <property name="removeAbandonedTimeout" value="300" />
+        <!-- #链接回收的时候控制台打印信息，测试环境可以加上true，线上环境false。会影响性能。 -->
+        <property name="logAbandoned" value="true" />
+        <!-- 验证连接有效与否的SQL，不同的数据配置不同 -->
+        <property name="validationQuery" value="select 1 " />
+        <!-- 配置监控统计拦截的filters，用于在界面中统计sql和开启druid防火墙。注意： -->
+        <!-- 监控中有jdbcSqlStat，原因是：com.alibaba.druid.statJdbcDataSourceStat中的createSqlStat方法中，
+            用了一个map来存放所有的sql语句，这样会导致线上触发FullGC，可将此处注释掉 -->
+        <property name="filters" value="wall,stat" />
+        <!-- 映射慢sql -->
+        <property name="proxyFilters">
+            <list>
+                <ref bean="statfilter"/>
+                <ref bean="logFilter"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 慢SQL记录  -->
+    <bean id="statfilter" class="com.alibaba.druid.filter.stat.StatFilter">
+        <!-- 开启合并sql -->
+        <property name="mergeSql" value="true" />
+        <!-- 开启慢查询语句,200毫秒 -->
+        <property name="slowSqlMillis" value="200" />
+        <property name="logSlowSql" value="true" />
+    </bean>
+    <!-- 数据库行为记录 -->
+    <bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+        <!-- 是否显示conn连接信息 -->
+        <property name="connectionLogEnabled" value="false"/>
+        <!-- 是否显示SQL执行对象 -->
+        <property name="statementLogEnabled" value="false"/>
+        <!-- 表示是否显示结果集。 -->
+        <property name="resultSetLogEnabled" value="true"/>
+        <!-- 是否显示SQL语句 -->
+        <property name="statementExecutableSqlLogEnable" value="true"/>
+    </bean>
+
+    <!--mybatis的相关配置-->
+
+    <!-- 4.1 Sqlsessionfactory 配置 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+       <!-- sqlSessionFactory需要一个数据源和一个mybatis的配置文件来生成sqlsession-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--mybatis的配置文件-->
+        <property name="configLocation" value="classpath:SqlMapConfig.xml"/>
+
+        <!--了解加载xml的映射文件,扫描这个包下面所有的Mapper.xml文件-->
+        <!--
+            <property name="mapperLocations" value="classpath:com/itheima/**/*Mapper.xml" />
+        -->
+    </bean>
+
+    <!--mybatis的注解配置-->
+        <!--扫描包下所有标识@MapperScan的注解,作为mybatis的映射sql语句的接口使用-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注解接口的包扫描-->
+        <property name="basePackage" value="com.itheima.mapper"/>
+        <!--关联Sqlsessionfactory 配置-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+
+    <!--service层的配置,事务管理器，声明式事务，aop织入-->
+    <!--事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--事务管理器需要dataSource-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--声明式事务,方法通配的形式-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 非事务方法 -->
+            <tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+            <!-- 事务方法 -->
+            <tx:method name="insert*"  isolation="READ_COMMITTED"/>
+            <tx:method name="update*"  isolation="READ_COMMITTED"/>
+            <tx:method name="delete*"  isolation="READ_COMMITTED"/>
+            <!-- 上面都没匹配上统一走非事务 -->
+            <tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--aop配置-->
+    <aop:config>
+        <!--设置切入点-->
+        <aop:pointcut id="serviceCut" expression="execution(* com.itheima.service..*.*(..))"/>
+        <!--织入-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceCut"/>
+    </aop:config>
+
+</beans>
